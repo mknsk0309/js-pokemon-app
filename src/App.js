@@ -9,6 +9,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [pokemonData, setPokemonData] = useState([]);
   const [nextURL, setNextURL] = useState("");
+  const [prevURL, setPrevURL] = useState("");
 
   useEffect(() => {
     const fetchPokemonData = async () => {
@@ -17,6 +18,7 @@ function App() {
       // 各ポケモンの詳細なデータを取得
       loadPokemon(res.results);
       setNextURL(res.next);
+      setPrevURL(res.previous); // null
       setLoading(false);
     };
     fetchPokemonData();
@@ -40,10 +42,20 @@ function App() {
     let data = await getAllPokemon(nextURL)
     await loadPokemon(data.results);
     setNextURL(data.next);
+    setPrevURL(data.previous);
     setLoading(false);
   };
 
-  const handlePrevPage = () => {};
+  const handlePrevPage = async () => {
+    if (!prevURL) return; // nullの時は動作しない
+
+    setLoading(true);
+    let data = await getAllPokemon(prevURL);
+    await loadPokemon(data.results);
+    setNextURL(data.next);
+    setPrevURL(data.previous);
+    setLoading(false);
+  };
 
   return (
     <>
